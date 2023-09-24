@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "d28f6ca5-a601-4d99-958d-30e4402256e9": {
+      "ProjectGuid": "d28f6ca5-a601-4d99-958d-30e4402256e9",
+      "DisplayName": "DatingAPP",
+      "ColorIndex": 0
+    },
+    "52d892f9-20c4-4ebd-a681-6a13db47e501": {
+      "ProjectGuid": "52d892f9-20c4-4ebd-a681-6a13db47e501",
+      "DisplayName": "Domain",
+      "ColorIndex": 1
+    },
+    "25a8ea76-6779-4b83-8378-79406c4834d3": {
+      "ProjectGuid": "25a8ea76-6779-4b83-8378-79406c4834d3",
+      "DisplayName": "Repository",
+      "ColorIndex": 2
+    },
+    "59adc4f0-6435-4c2f-93a2-3cbad2d4b623": {
+      "ProjectGuid": "59adc4f0-6435-4c2f-93a2-3cbad2d4b623",
+      "DisplayName": "Services",
+      "ColorIndex": 3
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 4
+}
