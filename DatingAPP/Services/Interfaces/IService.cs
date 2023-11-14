@@ -9,7 +9,7 @@ namespace Services.Interfaces
 {
     public interface IService<T>
     {
-        ActionResult<IEnumerable<T>> GetAll();
+        ActionResult<IQueryable<T>> GetAll();
 
 
         ActionResult<T> GetById(int Id);

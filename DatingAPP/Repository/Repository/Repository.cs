@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace Repository.Repository
 {
-    public class Repository<T> : IRepository <T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
-       private  mkContext _context;
+        private mkContext _context;
         public Repository(mkContext context) {
             _context = context;
         }
         public void Add(T entity)
         {
-            _context.Set<T>().Add(entity);  
+            _context.Set<T>().Add(entity);
             save();
         }
 
@@ -38,31 +38,38 @@ namespace Repository.Repository
 
         public void DeleteRange(IEnumerable<T> entities)
         {
-           _context.Set<T>().RemoveRange(entities);
+            _context.Set<T>().RemoveRange(entities);
             save();
 
         }
 
-        public IEnumerable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
-           return _context.Set<T>().AsNoTracking().ToList();
+
+            return _context.Set<T>().AsNoTracking();
         }
 
-        public T GetById(int Id)
-        {
-             
 
-            return _context.Set<T>().Find(Id);
-
-        }
-
-      
 
         public void UpdateById(T entity)
         {
             _context.Set<T>().Update(entity);
             save();
         }
+        public T Find(Expression<Func<T, bool>> filter, string? includes = null)
+        {
+            IQueryable<T> q = _context.Set<T>().AsNoTracking().Where(filter);
+            if (includes != null)
+            {
+                foreach (var item in includes.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
+                {
+                    q=q.Include(item);
+                }
+            }
+            return q.AsNoTracking().FirstOrDefault();
+        }
+
+
         public void save()
         {
             _context.SaveChanges();

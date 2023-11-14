@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Repository.Interface;
+using Microsoft.EntityFrameworkCore;
+
 namespace Repository.Repository
 {
     public class UserReposiotry : Repository<User>, IUserRepository
@@ -15,9 +17,19 @@ namespace Repository.Repository
             _context = context;
         }
 
-        public User FindEmail(string email)
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-          return  _context.Users.Where(x=>x.Email==email).SingleOrDefault();
+            return await _context.Users.Include(p=>p.Photos).ToListAsync();
+        }
+
+        public async Task<User> GetbyUserName(string userName)
+        {
+           return await _context.Users.Include(p => p.Photos).SingleOrDefaultAsync(p => p.UserName == userName);
+        }
+
+        public async Task<User> GetUsserbyId(int id)
+        {
+         return  await _context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Domain.DTOs;
+﻿using AutoMapper;
+using Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
@@ -13,13 +15,14 @@ namespace DatingAPP.Controllers
     {
         private  IServiceUnitOfWork _serviceUnitOfWork;
         private IAuthServices _authServices;
-        public UserController(IServiceUnitOfWork serviceUnitOfWork)
+        private IMapper _mapper;
+        public UserController(IServiceUnitOfWork serviceUnitOfWork,IMapper mapper)
         {
 
             _serviceUnitOfWork = serviceUnitOfWork;
+            _mapper = mapper;
 
         }
-
         [HttpPost("Register")]
         public ActionResult Register(RegisterDto e)
         {
@@ -27,6 +30,7 @@ namespace DatingAPP.Controllers
                 return _serviceUnitOfWork.user.Value.Register(e);
         }
         [HttpPost("Login")]
+
         public ActionResult<AuthDto> Login(LoginDto user)
         {
             using (_serviceUnitOfWork)
@@ -34,6 +38,36 @@ namespace DatingAPP.Controllers
 
         }
 
+        //[HttpGet]
+        //public ActionResult<IQueryable<User>> GetAllUsers()
+        //{
+        //    using (_serviceUnitOfWork)
+        //        return _serviceUnitOfWork.user.Value.GetAll();
+        //}
 
+        [HttpGet]
+        
+
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers()
+        {
+            using (_serviceUnitOfWork)
+                return await _serviceUnitOfWork.user.Value.GetAllUsers();
+        }
+
+        [HttpGet("{id}")]
+       
+
+        public async Task<ActionResult<MemberDto>> GetUsersById(int id)
+        {
+            using (_serviceUnitOfWork)
+                return await _serviceUnitOfWork.user.Value.GetUsserbyId(id);
+        }
+        
+        [HttpGet("GetByUserName/{UserName}")]
+        public async Task<ActionResult<MemberDto>> GetByUserName(string UserName)
+        {
+            using (_serviceUnitOfWork)
+                return await _serviceUnitOfWork.user.Value.GetbyUserName(UserName);
+        }
     }
 }

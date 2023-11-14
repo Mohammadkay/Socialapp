@@ -24,6 +24,7 @@ namespace DatingAPP
         public string? City { get; set; }
         public string? Country { get; set; }
         public string? Email { get; set; }
+        public string? KnwonAs { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
     }

@@ -9,9 +9,9 @@ namespace Domain.DTOs
 {
     public class LoginDto
     {
-        [Required(ErrorMessage = "Please Enter Email")]
-        [EmailAddress]
-        public String Email { get; set; }
+        [Required(ErrorMessage = "Please Enter UserName")]
+   
+        public String UserName { get; set; }
 
         [DataType(DataType.Password)]
         [Required(ErrorMessage = "Please enter password")]

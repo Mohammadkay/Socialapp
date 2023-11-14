@@ -9,6 +9,8 @@ namespace Repository.Interface
 {
     public interface IUserRepository:IRepository<User>
     {
-        public User FindEmail(string email);
+        Task<IEnumerable<User>> GetAllUsers();
+        Task<User> GetbyUserName(string userName);
+        Task<User> GetUsserbyId(int id);
     }
 }

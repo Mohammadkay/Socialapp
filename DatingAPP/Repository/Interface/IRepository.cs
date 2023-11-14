@@ -9,13 +9,11 @@ namespace Repository.Interface
 {
     public interface IRepository<T> where T : class
     {
-     
-       
-        IEnumerable<T> GetAll();
-        T GetById(int Id);
 
+
+        IQueryable<T> GetAll();
+        public T Find(Expression<Func<T, bool>> filter, string? includes = null);
         void Delete(T entity);
-
         void UpdateById(T entity);
         void Add(T entity);
         void AddRange(IEnumerable<T> entities);

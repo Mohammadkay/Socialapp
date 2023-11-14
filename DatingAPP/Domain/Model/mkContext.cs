@@ -16,6 +16,7 @@ namespace DatingAPP
         {
         }
 
+        public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; } = null!;
         public virtual DbSet<Photo> Photos { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -31,6 +32,18 @@ namespace DatingAPP
         {
             modelBuilder.UseCollation("utf8mb4_0900_ai_ci")
                 .HasCharSet("utf8mb4");
+
+            modelBuilder.Entity<Efmigrationshistory>(entity =>
+            {
+                entity.HasKey(e => e.MigrationId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("__efmigrationshistory");
+
+                entity.Property(e => e.MigrationId).HasMaxLength(150);
+
+                entity.Property(e => e.ProductVersion).HasMaxLength(32);
+            });
 
             modelBuilder.Entity<Photo>(entity =>
             {
@@ -74,7 +87,11 @@ namespace DatingAPP
 
                 entity.Property(e => e.Interests).HasMaxLength(255);
 
-                entity.Property(e => e.Introduction).HasMaxLength(255);
+                entity.Property(e => e.Introduction).HasMaxLength(500);
+
+                entity.Property(e => e.KnwonAs)
+                    .HasMaxLength(250)
+                    .HasColumnName("knwonAs");
 
                 entity.Property(e => e.Lastactive).HasColumnType("datetime");
 

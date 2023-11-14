@@ -1,4 +1,5 @@
-﻿using DatingAPP;
+﻿using AutoMapper;
+using DatingAPP;
 using Repository.Interface;
 using Repository.UnitOfWork;
 using Services.Interfaces;
@@ -17,13 +18,15 @@ namespace Services.UnitOfWork
         private IReposiotryUnitOfWork _reposiotryUnitOfWork;
 
         private IAuthServices _authServices;
+        private IMapper _mapper;
         public Lazy<IUserService> user { get; set; }
+        
 
         public ServiceUnitOfWork(mkContext context,IAuthServices authServices)
         {
             _authServices = authServices;
             _reposiotryUnitOfWork =new ReposiotryUnitOfWork(context);
-            user = new Lazy<IUserService>(()=>new UserService(_reposiotryUnitOfWork, _authServices));
+            user = new Lazy<IUserService>(()=>new UserService(_reposiotryUnitOfWork, _authServices, _mapper));
         }
 
         

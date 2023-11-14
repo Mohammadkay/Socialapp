@@ -12,7 +12,11 @@ namespace Services.Interfaces
     public interface IUserService:IService<User>
     {
 
-        public ActionResult Register(RegisterDto entity);
-        public ActionResult<AuthDto> Login(LoginDto entity);
+         ActionResult Register(RegisterDto entity);
+         ActionResult<AuthDto> Login(LoginDto entity);
+
+        Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers();
+        Task<ActionResult<MemberDto>> GetbyUserName(string userName);
+        Task<ActionResult<MemberDto>> GetUsserbyId(int id);
     }
 }

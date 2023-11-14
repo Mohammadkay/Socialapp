@@ -1,7 +1,9 @@
-﻿using DatingAPP;
+﻿using AutoMapper;
+using DatingAPP;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Interface;
+using Services.helpers;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,10 +18,12 @@ namespace Services.Services
     {
         private IReposiotryUnitOfWork _reposiotryUnitOfWork;
         private IAuthServices _authServices;
-        public UserService(IReposiotryUnitOfWork reposiotryUnitOfWork, IAuthServices authServices)
+        private IMapper _mapper;
+        public UserService(IReposiotryUnitOfWork reposiotryUnitOfWork, IAuthServices authServices,IMapper mapper)
         {
             _reposiotryUnitOfWork = reposiotryUnitOfWork;
             _authServices = authServices;
+            _mapper = mapper ?? new MapperConfiguration(cfg=>cfg.AddProfile<AutoMapperProfiles>()).CreateMapper();
         }
         public ActionResult Add(User entity)
         {
@@ -28,7 +32,7 @@ namespace Services.Services
                 _reposiotryUnitOfWork.UserRepository.Value.Add(entity);
                 return new OkObjectResult("User added successfully");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
                 return new BadRequestObjectResult(ex.Message);
@@ -38,7 +42,16 @@ namespace Services.Services
 
         public ActionResult AddRange(IEnumerable<User> entities)
         {
-            throw new NotImplementedException();
+            try
+            {
+              _reposiotryUnitOfWork.UserRepository.Value.AddRange(entities);
+
+                return new OkObjectResult("the users add successfully");
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         public ActionResult Delete(User entity)
@@ -61,25 +74,76 @@ namespace Services.Services
         //    {
         //        return new BadRequestObjectResult(ex.Message);
         //    }
-         //  }
+        //  }
 
         public ActionResult<IEnumerable<User>> GetAll()
         {
             return _reposiotryUnitOfWork.UserRepository.Value.GetAll().ToList();
-             
+
+        }
+
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers()
+        {
+            try
+            {
+
+                 var users =await _reposiotryUnitOfWork.UserRepository.Value.GetAllUsers();
+                var userToReturn=_mapper.Map<IEnumerable<MemberDto>>(users);
+                return new OkObjectResult(userToReturn);
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         public ActionResult<User> GetById(int Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user=_reposiotryUnitOfWork.UserRepository.Value.GetUsserbyId(Id);
+                return new OkObjectResult(user);
+            }catch(Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
+        public async Task<ActionResult<MemberDto>> GetbyUserName(string userName)
+        {
+            try
+            {
+                var user=await _reposiotryUnitOfWork.UserRepository.Value.GetbyUserName(userName);
+                var userToReturn=_mapper.Map<MemberDto>(user);
+                return new OkObjectResult(userToReturn);
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
+        public async Task<ActionResult<MemberDto>> GetUsserbyId(int id)
+        {
+            try
+            {
+                var user =await _reposiotryUnitOfWork.UserRepository.Value.GetUsserbyId(id);
+                var userToReturn = _mapper.Map<MemberDto>(user);
+                return new OkObjectResult(userToReturn);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         public ActionResult<AuthDto> Login(LoginDto entity)
         {
-            try 
+            try
             {
-                var user = _reposiotryUnitOfWork.UserRepository.Value.FindEmail(entity.Email);
-                if(user == null)
+                var user = _reposiotryUnitOfWork.UserRepository.Value.Find(x=>x.UserName==entity.UserName);
+
+                if (user == null)
                 {
                     return new BadRequestObjectResult("You must Register");
                 }
@@ -93,7 +157,7 @@ namespace Services.Services
 
                 AuthDto logedIn = new AuthDto
                 {
-             
+
                     Name = user.UserName,
                     Token = _authServices.CreateToken(user)
                 };
@@ -115,15 +179,15 @@ namespace Services.Services
         {
             try
             {
-                var user = _reposiotryUnitOfWork.UserRepository.Value.FindEmail(entity.Email);
+                var user = _reposiotryUnitOfWork.UserRepository.Value.Find(x=>x.UserName==entity.UserName);
                 if (user == null)
                 {
                     using var hmac = new HMACSHA512();
                     var newuser = new User
                     {
-                        UserName = entity.UserName,
+                        UserName = entity.Email,
                         Email = entity.Email,
-                        HashPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(entity.Passworrd)),
+                        HashPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(entity.Password)),
                         Saltpassword = hmac.Key
                     };
                     _reposiotryUnitOfWork.UserRepository.Value.Add(newuser);
@@ -134,13 +198,18 @@ namespace Services.Services
                     return new NotFoundObjectResult("the Emal is already exisst");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new BadRequestObjectResult(ex.Message);
             }
         }
 
         public ActionResult UpdateById(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        ActionResult<IQueryable<User>> IService<User>.GetAll()
         {
             throw new NotImplementedException();
         }

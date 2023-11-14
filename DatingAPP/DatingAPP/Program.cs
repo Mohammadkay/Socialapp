@@ -5,6 +5,10 @@ using Services.Interfaces;
 using Services.UnitOfWork;
 using System.Text;
 using Services.Services;
+using DatingAPP.Extinsion;
+using DatingAPP.Middelware;
+using Microsoft.EntityFrameworkCore;
+using Domain.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,27 +18,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IServiceUnitOfWork, ServiceUnitOfWork>();
-builder.Services.AddScoped<IAuthServices, AuthServices>();
-builder.Services.AddDbContext<mkContext>();
-builder.Services.AddCors(P => P.AddPolicy("crospolicy", build =>
-{
-    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-    };
-});
+builder.Services.AddApplicationService(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -50,4 +42,16 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using var scop=app.Services.CreateScope();
+var services = scop.ServiceProvider;
+try
+{
+    var context=services.GetRequiredService<mkContext>();
+    await context.Database.MigrateAsync();
+    await Seed.seedUsers(context);
+}catch (Exception ex)
+{
+    var logger=services.GetService<ILogger<Program>>();
+    logger.LogError(ex, "An error occured during migration");
+}
 app.Run();

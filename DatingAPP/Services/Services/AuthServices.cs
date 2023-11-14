@@ -27,7 +27,7 @@ namespace Services.Services
             {
                
                 new Claim(JwtRegisteredClaimNames.Name,user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email,user.Email),
+                //new Claim(JwtRegisteredClaimNames.Email,user.Email),
             };
             var creds = new SigningCredentials(_key,SecurityAlgorithms.HmacSha512Signature);
             var tokenDescription = new SecurityTokenDescriptor
